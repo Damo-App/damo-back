@@ -32,10 +32,10 @@ jobs:
         run: ./gradlew build -x test
       - name: Docker build
         run: |
-          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
-          docker build -t spring-cicd .
-          docker tag spring-cicd hogeun99/spring-cicd:${GITHUB_SHA::7}
-          docker push hogeun99/spring-cicd:${GITHUB_SHA::7}
+#          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+#          docker build -t spring-cicd .
+#          docker tag spring-cicd hogeun99/spring-cicd:${GITHUB_SHA::7}
+#          docker push hogeun99/spring-cicd:${GITHUB_SHA::7}
       #위 내용은 지속적 통합을 위한 스크립트입니다.
       #지속적 통합을 위한 스크립트 아래에 작성합니다.
       - name: Configure AWS credentials
