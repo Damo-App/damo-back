@@ -1,78 +1,78 @@
-name: Java CI with Gradle
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
-    env:
-      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-      RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-      MYSQL_USER: ${{ secrets.MYSQL_USER }}
-      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'zulu'
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Set active profile for Spring Boot
-        run: echo "SPRING_PROFILES_ACTIVE=server" # =server, =local 로 환경설정
-      - name: Build with Gradle
-        run: ./gradlew build -x test
-      - name: Docker build
-        run: |
-#          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
-#          docker build -t spring-cicd .
-#          docker tag spring-cicd hogeun99/spring-cicd:${GITHUB_SHA::7}
-#          docker push hogeun99/spring-cicd:${GITHUB_SHA::7}
-      #위 내용은 지속적 통합을 위한 스크립트입니다.
-      #지속적 통합을 위한 스크립트 아래에 작성합니다.
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-      - name: Start Session Manager session
-        run: |
-#        aws ssm start-session --target i-06a6c86f847100e6d
-      - name: Deploy to Server
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ap-northeast-2
-        run: |
-#          aws ssm send-command \
-#            --instance-ids i-06a6c86f847100e6d \
-#            --document-name "AWS-RunShellScript" \
-#            --parameters "commands=[
-#              'if sudo docker ps -a --format \\'{{.Names}}\\' | grep -q \\'^server$\\'; then',
-#              '  sudo docker stop server',
-#              '  sudo docker rm server',
-#              'fi',
-#              'sudo docker pull hogeun99/spring-cicd:${GITHUB_SHA::7}',
-#              'sudo docker tag hogeun99/spring-cicd:${GITHUB_SHA::7} spring-cicd',
-#              'sudo docker run -d --name server -p 8080:8080 \\
-#                -v /home/ubuntu/fileImage:/app/fileImage \\
-#                -e RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }} \\
-#                -e MYSQL_USER=${{ secrets.MYSQL_USER }} \\
-#                -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \\
-#                -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \\
-#                -e ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} \\
-#                -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \\
-#                -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \\
-#                -e AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} \\
-#                spring-cicd'
-#            ]" \
-#            --output text
+#name: Java CI with Gradle
+#
+#on:
+#  push:
+#    branches: [ main ]
+#
+#jobs:
+#  build:
+#
+#    runs-on: ubuntu-latest
+#    env:
+#      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+#      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+#      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#      AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+#      RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
+#      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+#      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Set up JDK 11
+#        uses: actions/setup-java@v2
+#        with:
+#          java-version: '11'
+#          distribution: 'zulu'
+#      - name: Grant execute permission for gradlew
+#        run: chmod +x gradlew
+#      - name: Set active profile for Spring Boot
+#        run: echo "SPRING_PROFILES_ACTIVE=server" # =server, =local 로 환경설정
+#      - name: Build with Gradle
+#        run: ./gradlew build -x test
+#      - name: Docker build
+#        run: |
+##          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+##          docker build -t spring-cicd .
+##          docker tag spring-cicd hogeun99/spring-cicd:${GITHUB_SHA::7}
+##          docker push hogeun99/spring-cicd:${GITHUB_SHA::7}
+#      #위 내용은 지속적 통합을 위한 스크립트입니다.
+#      #지속적 통합을 위한 스크립트 아래에 작성합니다.
+##      - name: Configure AWS credentials
+##        uses: aws-actions/configure-aws-credentials@v1
+##        with:
+##          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+##          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+##          aws-region: ap-northeast-2
+##      - name: Start Session Manager session
+##        run: |
+###        aws ssm start-session --target i-06a6c86f847100e6d
+##      - name: Deploy to Server
+##        env:
+##          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+##          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+##          AWS_REGION: ap-northeast-2
+##        run: |
+##          aws ssm send-command \
+##            --instance-ids i-06a6c86f847100e6d \
+##            --document-name "AWS-RunShellScript" \
+##            --parameters "commands=[
+##              'if sudo docker ps -a --format \\'{{.Names}}\\' | grep -q \\'^server$\\'; then',
+##              '  sudo docker stop server',
+##              '  sudo docker rm server',
+##              'fi',
+##              'sudo docker pull hogeun99/spring-cicd:${GITHUB_SHA::7}',
+##              'sudo docker tag hogeun99/spring-cicd:${GITHUB_SHA::7} spring-cicd',
+##              'sudo docker run -d --name server -p 8080:8080 \\
+##                -v /home/ubuntu/fileImage:/app/fileImage \\
+##                -e RDS_ENDPOINT=${{ secrets.RDS_ENDPOINT }} \\
+##                -e MYSQL_USER=${{ secrets.MYSQL_USER }} \\
+##                -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \\
+##                -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \\
+##                -e ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} \\
+##                -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \\
+##                -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \\
+##                -e AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }} \\
+##                spring-cicd'
+##            ]" \
+##            --output text

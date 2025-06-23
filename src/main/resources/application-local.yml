@@ -61,8 +61,8 @@ cloud:
   aws:
     credentials:
       instance-profile: false
-      accessKey: ${AWS_ACCESS_KEY}
-      secretKey: ${AWS_SECRET_ACCESS_KEY}
+      accessKey: 1234
+      secretKey: 1234
     region:
       auto: false
       static: ap-northeast-2
