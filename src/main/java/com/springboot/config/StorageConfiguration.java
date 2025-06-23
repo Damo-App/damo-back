@@ -25,22 +25,22 @@ public class StorageConfiguration {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    @Bean
-    public AmazonS3 amazonS3Client() {
-        AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-
-        return AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(region)
-                .build();
-    }
+//    @Bean
+//    public AmazonS3 amazonS3Client() {
+//        AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
+//
+//        return AmazonS3ClientBuilder
+//                .standard()
+//                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+//                .withRegion(region)
+//                .build();
+//    }
 
 //    @Primary  // 우선순위 부여: S3StorageService가 기본 StorageService가 됨
-    @Bean
-    public StorageService s3StorageService(AmazonS3 amazonS3) {
-        return new S3StorageService(amazonS3);
-    }
+//    @Bean
+//    public StorageService s3StorageService(AmazonS3 amazonS3) {
+//        return new S3StorageService(amazonS3);
+//    }
 
     @Primary
     @Bean
