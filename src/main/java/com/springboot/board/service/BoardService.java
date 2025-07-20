@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +43,7 @@ public class BoardService {
         this.storageService = storageService;
     }
 
-    public Board createBoard(Board board, long memberId, long groupId, MultipartFile imageFile) {
+    public Board createBoard(Board board, long memberId, long groupId, MultipartFile imageFile) throws IOException {
         Member member = memberService.findVerifiedMember(memberId);
         Group group = groupService.findVerifiedGroup(groupId);
         //해당 모임의 모임원인지 확인한다. (테스트 필요)
@@ -51,16 +53,38 @@ public class BoardService {
 
         // 파일을 가져왔을때 그 파일이 null이거나 빈 파일 일때 검증해야함
         if (imageFile != null && !imageFile.isEmpty()) {
-            String uuid = UUID.randomUUID().toString();
-            String pathWithoutExt = "groups/" + group.getGroupId() + "/" + uuid;
-            // 이미지가 저장되며 내부적으로 확장자를 붙임
-            //String relativePath = storageService.store(imageFile, pathWithoutExt);
-            // 실제 접근가능한 url -> 프론트가 이 링크 사용할 예정
-            //String imageUrl = "/images/" + relativePath;
+//            String uuid = UUID.randomUUID().toString();
+//            String pathWithoutExt = "groups/" + group.getGroupId() + "/" + uuid;
+//            // 이미지가 저장되며 내부적으로 확장자를 붙임
+//            //String relativePath = storageService.store(imageFile, pathWithoutExt);
+//            // 실제 접근가능한 url -> 프론트가 이 링크 사용할 예정
+//            //String imageUrl = "/images/" + relativePath;
+//
+//            String imageUrl = storageService.store(imageFile, pathWithoutExt);
+//            // 실제 db에 이미지 경로 저장
+//            board.setImage(imageUrl);
+            Board savedBoard = boardRepository.save(board);
 
-            String imageUrl = storageService.store(imageFile, pathWithoutExt);
-            // 실제 db에 이미지 경로 저장
-            board.setImage(imageUrl);
+            String baseDir = "C:/my-upload-dir/groups/" + group.getGroupId() + "/board/" + savedBoard.getBoardId();
+            File folder = new File(baseDir);
+            if (!folder.exists()) {
+                boolean created = folder.mkdirs();
+                if (!created) throw new IOException("폴더 생성 실패: " + baseDir);
+            }
+
+            String fileName = "boardImg.jpg";
+            File dest = new File(folder, fileName);
+            try {
+                imageFile.transferTo(dest);
+            } catch (IOException | IllegalStateException e) {
+                e.printStackTrace();
+            }
+
+            // URL 세팅
+            String imageUrl = "http://192.168.1.30:8080/groups/" + group.getGroupId() + "/board/" + savedBoard.getBoardId() + "/" + fileName;
+            savedBoard.setImage(imageUrl);
+            boardRepository.save(savedBoard);
+
         } else {
             // 이미지가 없다면 그냥 없음 -> 텍스트만 나가야함
             board.setImage(null);
@@ -69,7 +93,7 @@ public class BoardService {
     }
 
     @Transactional
-    public Board updateBoard(Board board, long memberId, long groupId, MultipartFile imageFile) {
+    public Board updateBoard(Board board, long memberId, long groupId, MultipartFile imageFile) throws IOException {
         Member member = memberService.findVerifiedMember(memberId);
         Group group = groupService.findVerifiedGroup(groupId);
 
@@ -92,20 +116,61 @@ public class BoardService {
         Optional.ofNullable(board.getContent())
                 .ifPresent(content -> findBoard.setContent(content));
 
+//        if (imageFile != null && !imageFile.isEmpty()) {
+//            // 기존 이미지 삭제 (기본이미지 제외)
+//            String prevImage = findBoard.getImage();
+//            //만약 이미지가 있을경우(NULL 아니면) 저장소에서 이미지 삭제
+//            if (prevImage != null) {
+//                storageService.delete(prevImage.replace("/images/", ""));
+//            }
+//
+//            // 새 이미지 저장
+//            String uuid = UUID.randomUUID().toString();
+//            String pathWithoutExt = "groups/" + group.getGroupId() + "/" + uuid;
+//
+//            String imageUrl = storageService.store(imageFile, pathWithoutExt);
+//            findBoard.setImage(imageUrl);
+//        }
+
         if (imageFile != null && !imageFile.isEmpty()) {
             // 기존 이미지 삭제 (기본이미지 제외)
             String prevImage = findBoard.getImage();
-            //만약 이미지가 있을경우(NULL 아니면) 저장소에서 이미지 삭제
             if (prevImage != null) {
-                storageService.delete(prevImage.replace("/images/", ""));
+                // prevImage에서 파일 경로 추출
+                // 예시: "http://192.168.1.30:8080/groups/{groupId}/board/{boardId}/boardImg.jpg"
+                String baseDir = "C:/my-upload-dir/groups/" + group.getGroupId() + "/board/" + findBoard.getBoardId();
+                String fileName = "boardImg.jpg";
+                File prevFile = new File(baseDir, fileName);
+                if (prevFile.exists()) {
+                    prevFile.delete();
+                }
             }
 
             // 새 이미지 저장
-            String uuid = UUID.randomUUID().toString();
-            String pathWithoutExt = "groups/" + group.getGroupId() + "/" + uuid;
+            String baseDir = "C:/my-upload-dir/groups/" + group.getGroupId() + "/board/" + findBoard.getBoardId();
+            File folder = new File(baseDir);
+            if (!folder.exists()) {
+                boolean created = folder.mkdirs();
+                if (!created) throw new IOException("폴더 생성 실패: " + baseDir);
+            }
 
-            String imageUrl = storageService.store(imageFile, pathWithoutExt);
+            String fileName = "boardImg.jpg";
+            File dest = new File(folder, fileName);
+            try {
+                imageFile.transferTo(dest);
+            } catch (IOException | IllegalStateException e) {
+                e.printStackTrace();
+            }
+
+            // URL 세팅
+            String imageUrl = "http://192.168.1.30:8080/groups/" + group.getGroupId() + "/board/" + findBoard.getBoardId() + "/" + fileName;
             findBoard.setImage(imageUrl);
+            boardRepository.save(findBoard);
+
+        } else {
+            // 이미지가 없다면 그냥 없음 -> 텍스트만 나가야함
+            findBoard.setImage(null);
+//            boardRepository.save(findBoard);
         }
         return boardRepository.save(findBoard);
     }

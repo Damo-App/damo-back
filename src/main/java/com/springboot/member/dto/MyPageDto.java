@@ -33,6 +33,9 @@ public class MyPageDto {
 
         @Schema(description = "게시글 이미지 주소", example = "/image/uuid")
         private String Image;
+
+        @Schema(description = "모임 ID", example = "1")
+        private long groupId;
     }
 
     @Getter

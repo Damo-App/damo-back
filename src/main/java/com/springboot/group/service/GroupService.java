@@ -127,7 +127,7 @@ public class GroupService {
         }
 
         // URL 세팅
-        String imageUrl = "http://192.168.45.174:8080/groups/" + savedGroup.getGroupId() + "/" + fileName;
+        String imageUrl = "http://192.168.1.30:8080/groups/" + savedGroup.getGroupId() + "/" + fileName;
         savedGroup.setImage(imageUrl);
         groupRepository.save(savedGroup);
 

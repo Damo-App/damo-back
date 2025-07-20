@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "게시판 컨트롤러", description = "게시판 관련 컨트롤러")
@@ -50,7 +51,7 @@ public class BoardController {
     public ResponseEntity postBoard(@Valid @RequestPart BoardDto.Post boardPostDto,
                                     @RequestPart(required = false) MultipartFile boardImage,
                                     @PathVariable("group-id") Long groupId,
-                                    @Parameter(hidden = true) @AuthenticationPrincipal Member member) {
+                                    @Parameter(hidden = true) @AuthenticationPrincipal Member member) throws IOException {
         Board board = boardService.createBoard(mapper.boardPostDtoToBoard(boardPostDto), member.getMemberId(), groupId, boardImage);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -66,7 +67,7 @@ public class BoardController {
                                      @PathVariable("group-id") Long groupId,
                                      @Valid @RequestPart BoardDto.Patch boardPatchDto,
                                      @RequestPart(required = false) MultipartFile boardImage,
-                                     @Parameter(hidden = true) @AuthenticationPrincipal Member member){
+                                     @Parameter(hidden = true) @AuthenticationPrincipal Member member) throws IOException {
         boardPatchDto.setBoardId(boardId);
         Board board = boardService.updateBoard(mapper.boardPatchDtoToBoard(boardPatchDto), member.getMemberId(),groupId, boardImage);
 
