@@ -20,7 +20,8 @@ public interface MyPageMapper {
                 board.getComments() != null ? board.getComments().size() : 0,
                 board.getCreatedAt().toLocalDate(),
                 board.getGroup() != null ? board.getGroup().getGroupName() : null,
-                board.getImage()
+                board.getImage(),
+                board.getGroup().getGroupId()
         );
     }
 
