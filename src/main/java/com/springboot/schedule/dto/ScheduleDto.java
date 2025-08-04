@@ -101,6 +101,12 @@ public class ScheduleDto {
         @Schema(description = "일정 ID", example = "1")
         private Long groupScheduleId;
 
+        @Schema(description = "모임 아이디", example = "1")
+        private Long groupId;
+
+        @Schema(description = "모임 이름", example = "고양이 모임")
+        private String groupName;
+
         @Schema(description = "일정 이름", example = "강남역 스터디 모임")
         private String scheduleName;
 
@@ -182,6 +188,12 @@ public class ScheduleDto {
         @Schema(description = "일정 소개글", example = "매주 월수금 헬스장에서 운동하는 모임입니다.")
         private String scheduleContent;
 
+        @Schema(description = "일정 시작 시간", example = "12:00")
+        private LocalTime startTime;
+
+        @Schema(description = "일정 끝 시간", example = "16:00")
+        private LocalTime endTime;
+
         @Schema(description = "일정 시작 날짜", example = "2025-04-01")
         private LocalDate startSchedule;
 
@@ -214,11 +226,20 @@ public class ScheduleDto {
     @AllArgsConstructor
     @Builder
     public static class RecurringDateDto {
+        @Schema(description = "일정 ID", example = "1")
+        private Long groupScheduleId;
+
         @Schema(description = "정기 일정 날짜", example = "2025-04-03")
         private LocalDate date;
 
-        @Schema(description = "정기 일정 시간", example = "10:00:00")
-        private LocalTime time;
+//        @Schema(description = "정기 일정 시간", example = "10:00:00")
+//        private LocalTime time;
+
+        @Schema(description = "일정 시작 시간", example = "12:00")
+        private LocalTime startTime;
+
+        @Schema(description = "일정 끝 시간", example = "16:00")
+        private LocalTime endTime;
     }
 
     //회원의 카테고리별 일정(참여중) 조회시 -> 달력에 뿌려야하므로 기간 + 상태
@@ -228,6 +249,12 @@ public class ScheduleDto {
     @AllArgsConstructor
     @Builder
     public static class CalendarResponse {
+        @Schema(description = "모임 아이디", example = "1")
+        private Long groupId;
+        @Schema(description = "모임 이름", example = "고양이 모임")
+        private String groupName;
+        @Schema(description = "일정 ID", example = "1")
+        private Long groupScheduleId;
         @Schema(description = "일정 시작 기간", example = "2025.04.04")
         private LocalDate startSchedule;
         @Schema(description = "일정 끝 기간", example = "2025.04.14")
