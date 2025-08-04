@@ -16,6 +16,9 @@ public class CalendarScheduleDto {
     @Schema(description = "일정이 속한 날짜", example = "2025-03-27")
     private LocalDate date;
 
+    @Schema(description = "모임 아이디", example = "1")
+    private Long groupId;
+
     @Schema(description = "모임 이름", example = "강남역 스터디 모임")
     private String groupName;
 

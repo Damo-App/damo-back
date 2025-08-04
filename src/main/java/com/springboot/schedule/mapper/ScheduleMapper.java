@@ -19,6 +19,8 @@ public interface ScheduleMapper {
     Schedule schedulePatchToSchedule(ScheduleDto.Patch schedulePatch);
     default ScheduleDto.ResponseBasic toBasicResponse(Schedule schedule) {
         return ScheduleDto.ResponseBasic.builder()
+                .groupId(schedule.getGroup().getGroupId())
+                .groupName(schedule.getGroup().getGroupName())
                 .groupScheduleId(schedule.getScheduleId())
                 .scheduleName(schedule.getScheduleName())
                 .scheduleContent(schedule.getScheduleContent())
@@ -38,7 +40,8 @@ public interface ScheduleMapper {
                 schedule.getStartSchedule(),
                 schedule.getEndSchedule(),
                 schedule.getDaysOfWeek(),
-                schedule.getStartSchedule().toLocalTime()
+                schedule.getStartSchedule().toLocalTime(),
+                schedule.getEndSchedule().toLocalTime()
         );
 
         return ScheduleDto.ResponseRecurring.builder()
@@ -46,7 +49,9 @@ public interface ScheduleMapper {
                 .scheduleName(schedule.getScheduleName())
                 .scheduleContent(schedule.getScheduleContent())
                 .startSchedule(schedule.getStartSchedule().toLocalDate())
+                .startTime(schedule.getStartSchedule().toLocalTime())
                 .endSchedule(schedule.getEndSchedule().toLocalDate())
+                .endTime(schedule.getEndSchedule().toLocalTime())
                 .daysOfWeek(schedule.getDaysOfWeek())
                 .recurringDates(recurringDates)
                 .address(schedule.getAddress())
@@ -57,16 +62,19 @@ public interface ScheduleMapper {
     }
 
     // ✨ 반복 요일 기반 날짜 계산
-    default List<ScheduleDto.RecurringDateDto> getRecurringDates(LocalDateTime start, LocalDateTime end, List<DayOfWeek> daysOfWeek, LocalTime time) {
+    default List<ScheduleDto.RecurringDateDto> getRecurringDates(LocalDateTime start, LocalDateTime end, List<DayOfWeek> daysOfWeek, LocalTime startTime, LocalTime endTime) {
         List<ScheduleDto.RecurringDateDto> result = new ArrayList<>();
         LocalDate current = start.toLocalDate();
         LocalDate endDate = end.toLocalDate();
+        LocalTime starts = start.toLocalTime();
+        LocalTime ends = end.toLocalTime();
 
         while (!current.isAfter(endDate)) {
             if (daysOfWeek.contains(current.getDayOfWeek())) {
                 result.add(ScheduleDto.RecurringDateDto.builder()
                         .date(current)
-                        .time(time)
+                        .startTime(starts)
+                        .endTime(ends)
                         .build());
             }
             current = current.plusDays(1);
@@ -77,6 +85,7 @@ public interface ScheduleMapper {
     default CalendarScheduleDto toCalendarScheduleDto(Schedule schedule, LocalDate targetDate) {
         CalendarScheduleDto.CalendarScheduleDtoBuilder builder = CalendarScheduleDto.builder()
                 .date(targetDate)
+                .groupId(schedule.getGroup().getGroupId())
                 .groupName(schedule.getGroup().getGroupName())
                 .scheduleName(schedule.getScheduleName())
                 .groupImage(schedule.getGroup().getImage())
@@ -102,6 +111,9 @@ public interface ScheduleMapper {
                 .map(schedule -> {
                     ScheduleDto.CalendarResponse.CalendarResponseBuilder builder =
                             ScheduleDto.CalendarResponse.builder()
+                                    .groupName(schedule.getGroup().getGroupName())
+                                    .groupId(schedule.getGroup().getGroupId())
+                                    .groupScheduleId(schedule.getScheduleId())
                                     .startSchedule(schedule.getStartSchedule().toLocalDate())
                                     .endSchedule(schedule.getEndSchedule().toLocalDate())
                                     .scheduleStatus(schedule.getScheduleStatus());
