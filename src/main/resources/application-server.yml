@@ -30,7 +30,9 @@ spring:
     password: ${MYSQLPASSWORD}
 
   jpa:
-    open-in-view: false
+    # 컨트롤러/매퍼에서 지연로딩 연관관계(LAZY)에 접근하는 구조이므로 OSIV 활성화 필요.
+    # false로 두면 트랜잭션 종료 후 매핑 단계에서 LazyInitializationException(500) 발생.
+    open-in-view: true
     hibernate:
       ddl-auto: update   # 스키마 자동 생성/갱신, 데이터는 재시작해도 유지됨
     show-sql: false
