@@ -21,6 +21,10 @@ public class RedisRepositoryConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
+    // Redis 비밀번호 (Railway 등 인증이 필요한 환경용). 미설정 시 빈 문자열 → 인증 생략.
+    @Value("${spring.data.redis.password:}")
+    private String password;
+
     //RedisConnectionFactory 빈을 생성하는 메서드
     //Redis 서버와의 연결을 관리하는 역할, Spring Data Redis는 이 팩토리를 통해 Redis 서버와의 모든 상호작용을 수행한다.
     @Bean
@@ -29,6 +33,10 @@ public class RedisRepositoryConfig {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host); // Redis 서버의 호스트 설정
         redisStandaloneConfiguration.setPort(port);     // Redis 서버의 포트 설정
+        // 비밀번호가 설정된 경우에만 인증 정보 적용 (Railway Redis는 비밀번호 필수)
+        if (password != null && !password.isEmpty()) {
+            redisStandaloneConfiguration.setPassword(password);
+        }
 
         // LettuceConnectionFactory는 Redis와의 연결을 비동기적으로 관리하는 클라이언트 라이브러리
         // LettuceConnectionFactory를 사용하여 Redis 연결을 설정
