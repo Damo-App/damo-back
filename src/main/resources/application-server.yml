@@ -22,20 +22,17 @@ spring:
       - org.springframework.cloud.aws.autoconfigure.messaging.MessagingAutoConfiguration
       - org.springframework.cloud.aws.autoconfigure.metrics.CloudWatchExportAutoConfiguration
 
-  h2:
-    console:
-      enabled: true
-      path: /h2
-      settings:
-        web-allow-others: true
-
+  # Railway MySQL 플러그인 연결 (백엔드 서비스 Variables에 MYSQL* 참조 변수 등록 필요)
   datasource:
-    url: jdbc:h2:mem:test
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+    username: ${MYSQLUSER}
+    password: ${MYSQLPASSWORD}
 
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create   # 컨테이너 기동 시 스키마 자동 생성 (인메모리라 재시작 시 초기화됨)
+      ddl-auto: update   # 스키마 자동 생성/갱신, 데이터는 재시작해도 유지됨
     show-sql: false
     properties:
       hibernate:
@@ -45,7 +42,9 @@ spring:
   sql:
     init:
       mode: always
+      platform: mysql      # data-mysql.sql 만 실행 (멱등 INSERT IGNORE)
       encoding: UTF-8
+      continue-on-error: true
 
   # Redis: Railway에 Redis 플러그인 추가 후 REDIS_HOST/REDIS_PORT 주입. 미설정 시 localhost 폴백.
   data:
