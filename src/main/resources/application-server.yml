@@ -45,6 +45,7 @@ spring:
   sql:
     init:
       mode: always
+      encoding: UTF-8
 
   # Redis: Railway에 Redis 플러그인 추가 후 REDIS_HOST/REDIS_PORT 주입. 미설정 시 localhost 폴백.
   data:
