@@ -46,11 +46,12 @@ spring:
       encoding: UTF-8
       continue-on-error: true
 
-  # Redis: Railway에 Redis 플러그인 추가 후 REDIS_HOST/REDIS_PORT 주입. 미설정 시 localhost 폴백.
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+  # Redis: Railway에 Redis 플러그인 추가 후 REDIS_HOST/REDIS_PORT/REDIS_PASSWORD 주입. 미설정 시 localhost 폴백.
+  # ※ Spring Boot 2.7은 prefix가 spring.redis (3.x의 spring.data.redis 아님)
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
 
 springdoc:
   default-flat-param-object: true
