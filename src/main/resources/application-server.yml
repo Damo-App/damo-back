@@ -33,6 +33,7 @@ spring:
     url: jdbc:h2:mem:test
 
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: create   # 컨테이너 기동 시 스키마 자동 생성 (인메모리라 재시작 시 초기화됨)
     show-sql: false
@@ -100,3 +101,8 @@ server:
   servlet:
     encoding:
       force-response: true
+  tomcat:
+    threads:
+      max: 30          # 기본 200 → 30으로 축소 (스레드 스택 메모리 절감)
+      min-spare: 5
+    max-connections: 200

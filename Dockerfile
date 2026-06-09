@@ -10,4 +10,5 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*-SNAPSHOT.jar /app/app.jar
 # 기본 프로필은 server. Railway 환경변수 SPRING_PROFILES_ACTIVE로 덮어쓸 수 있음.
 # PORT는 application-server.yml에서 ${PORT}로 바인딩.
-ENTRYPOINT ["sh","-c","java -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-server} -jar /app/app.jar"]
+# 메모리 플래그: Railway 컨테이너(약 512MB) 한도 내에서 동작하도록 힙/GC/스택 제한 (OOM Kill 방지)
+ENTRYPOINT ["sh","-c","java -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-server} -XX:MaxRAMPercentage=60.0 -XX:+UseSerialGC -Xss512k -jar /app/app.jar"]
